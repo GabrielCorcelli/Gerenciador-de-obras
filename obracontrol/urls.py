@@ -32,14 +32,8 @@ router.register('usuarios', UsuarioViewSet, basename='usuario')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # API
     path('api/', include(router.urls)),
     path('api/auth/login/', login_view, name='api-login'),
     path('api/auth/logout/', logout_view, name='api-logout'),
     path('api/dashboard/', dashboard_view, name='api-dashboard'),
-    # Legacy template views (kept for Django Admin compatibility)
-    path('', include('core.urls')),
-    path('accounts/', include('accounts.urls')),
-    path('obras/', include('obras.urls')),
-    path('materiais/', include('materiais.urls')),
 ]
