@@ -1,0 +1,175 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - ObraControl{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Summary Cards -->
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card bg-primary text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title opacity-75">Total de Obras</h6>
+                        <h2 class="mb-0">{{ total_obras }}</h2>
+                    </div>
+                    <div class="fs-1 opacity-50"><i class="bi bi-building"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title opacity-75">Obras Ativas</h6>
+                        <h2 class="mb-0">{{ obras_ativas_count }}</h2>
+                    </div>
+                    <div class="fs-1 opacity-50"><i class="bi bi-hammer"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-warning text-dark h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title opacity-75">Gasto Total</h6>
+                        <h2 class="mb-0 fs-4">R$ {{ gasto_total|floatformat:2 }}</h2>
+                    </div>
+                    <div class="fs-1 opacity-50"><i class="bi bi-cash-stack"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-danger text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="card-title opacity-75">Obras Atrasadas</h6>
+                        <h2 class="mb-0">{{ obras_atrasadas.count }}</h2>
+                    </div>
+                    <div class="fs-1 opacity-50"><i class="bi bi-exclamation-triangle"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts -->
+<div class="row g-3 mb-4">
+    <div class="col-lg-7">
+        <div class="card h-100">
+            <div class="card-header"><h6 class="mb-0"><i class="bi bi-bar-chart"></i> Gastos por Obra (Top 10)</h6></div>
+            <div class="card-body">
+                <canvas id="chartObras" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="card h-100">
+            <div class="card-header"><h6 class="mb-0"><i class="bi bi-pie-chart"></i> Gastos por Categoria</h6></div>
+            <div class="card-body">
+                <canvas id="chartCategorias" height="250"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alerts & Recent -->
+<div class="row g-3">
+    {% if obras_prazo %}
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-header bg-warning bg-opacity-10">
+                <h6 class="mb-0"><i class="bi bi-clock-history"></i> Obras Próximas do Prazo (30 dias)</h6>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for obra in obras_prazo %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <a href="{% url 'obras:obra_detail' obra.pk %}">{{ obra.nome }}</a>
+                    <span class="badge bg-warning text-dark">{{ obra.data_previsao_fim|date:"d/m/Y" }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="col-lg-{% if obras_prazo %}6{% else %}12{% endif %}">
+        <div class="card">
+            <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-clock"></i> Obras Recentes</h6>
+            </div>
+            <ul class="list-group list-group-flush">
+                {% for obra in obras_recentes %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <a href="{% url 'obras:obra_detail' obra.pk %}">{{ obra.nome }}</a>
+                    <span class="badge bg-{% if obra.status == 'em_andamento' %}success{% elif obra.status == 'planejada' %}info{% elif obra.status == 'pausada' %}warning{% elif obra.status == 'concluida' %}secondary{% else %}danger{% endif %}">
+                        {{ obra.get_status_display }}
+                    </span>
+                </li>
+                {% empty %}
+                <li class="list-group-item text-muted">Nenhuma obra cadastrada.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script>
+const COLORS = ['#0d6efd','#198754','#ffc107','#dc3545','#0dcaf0','#6f42c1','#fd7e14','#20c997','#d63384','#6610f2','#adb5bd','#495057'];
+
+// Bar chart - Gastos por Obra
+const ctxObras = document.getElementById('chartObras');
+if (ctxObras) {
+    new Chart(ctxObras, {
+        type: 'bar',
+        data: {
+            labels: {{ chart_obras_labels|safe }},
+            datasets: [{
+                label: 'Gasto (R$)',
+                data: {{ chart_obras_data|safe }},
+                backgroundColor: COLORS,
+                borderRadius: 4,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, ticks: { callback: v => 'R$ ' + v.toLocaleString('pt-BR') } }
+            }
+        }
+    });
+}
+
+// Pie chart - Gastos por Categoria
+const ctxCat = document.getElementById('chartCategorias');
+if (ctxCat) {
+    new Chart(ctxCat, {
+        type: 'doughnut',
+        data: {
+            labels: {{ chart_cat_labels|safe }},
+            datasets: [{
+                data: {{ chart_cat_data|safe }},
+                backgroundColor: COLORS,
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'right', labels: { boxWidth: 12, font: { size: 11 } } }
+            }
+        }
+    });
+}
+</script>
+{% endblock %}

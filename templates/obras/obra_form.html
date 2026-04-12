@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% if object %}Editar{% else %}Nova{% endif %} Obra - ObraControl{% endblock %}
+{% block page_title %}{% if object %}Editar Obra{% else %}Nova Obra{% endif %}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-10">
+        <div class="card">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-md-8">
+                            {{ form.nome|as_crispy_field }}
+                        </div>
+                        <div class="col-md-4">
+                            {{ form.tipo_obra|as_crispy_field }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.cliente|as_crispy_field }}
+                        </div>
+                        <div class="col-md-6">
+                            {{ form.responsavel|as_crispy_field }}
+                        </div>
+                    </div>
+                    {{ form.descricao|as_crispy_field }}
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{ form.endereco|as_crispy_field }}
+                        </div>
+                        <div class="col-md-3">
+                            {{ form.cidade|as_crispy_field }}
+                        </div>
+                        <div class="col-md-1">
+                            {{ form.estado|as_crispy_field }}
+                        </div>
+                        <div class="col-md-2">
+                            {{ form.cep|as_crispy_field }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            {{ form.status|as_crispy_field }}
+                        </div>
+                        <div class="col-md-3">
+                            {{ form.data_inicio|as_crispy_field }}
+                        </div>
+                        <div class="col-md-3">
+                            {{ form.data_previsao_fim|as_crispy_field }}
+                        </div>
+                        <div class="col-md-3">
+                            {{ form.data_fim_real|as_crispy_field }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            {{ form.orcamento_previsto|as_crispy_field }}
+                        </div>
+                    </div>
+                    {{ form.observacoes|as_crispy_field }}
+                    <div class="mt-3">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg"></i> Salvar
+                        </button>
+                        <a href="{% url 'obras:obra_list' %}" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

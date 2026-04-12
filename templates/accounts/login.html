@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Login - ObraControl{% endblock %}
+
+{% block content_no_auth %}
+<div class="min-vh-100 d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #212529 0%, #495057 100%);">
+    <div class="card shadow" style="min-width: 380px; max-width: 420px;">
+        <div class="card-body p-4">
+            <div class="text-center mb-4">
+                <h3><i class="bi bi-building text-primary"></i> ObraControl</h3>
+                <p class="text-muted">Sistema de Controle de Obras</p>
+            </div>
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-danger">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            <form method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+                <button type="submit" class="btn btn-primary w-100 mt-3">
+                    <i class="bi bi-box-arrow-in-right"></i> Entrar
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

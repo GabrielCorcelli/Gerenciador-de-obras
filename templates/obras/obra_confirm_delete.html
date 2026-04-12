@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Excluir Obra - ObraControl{% endblock %}
+{% block page_title %}Excluir Obra{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card border-danger">
+            <div class="card-body text-center">
+                <i class="bi bi-exclamation-triangle text-danger fs-1"></i>
+                <h5 class="mt-3">Confirmar Exclusão</h5>
+                <p>Tem certeza que deseja excluir a obra <strong>{{ object.nome }}</strong>?</p>
+                {% if object.compras.count > 0 %}
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-circle"></i>
+                    Esta obra possui <strong>{{ object.compras.count }}</strong> compra(s) de material que também será(ão) excluída(s).
+                </div>
+                {% endif %}
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i> Sim, Excluir</button>
+                    <a href="{% url 'obras:obra_detail' object.pk %}" class="btn btn-secondary">Cancelar</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
