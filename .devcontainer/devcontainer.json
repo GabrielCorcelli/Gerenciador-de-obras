@@ -1,0 +1,25 @@
+{
+	"name": "ObraControl Dev",
+	"dockerComposeFile": "../docker-compose.yaml",
+	"service": "backend",
+	"runServices": ["backend", "db", "frontend"],
+	"workspaceFolder": "/app",
+	"mounts": [
+		"source=${localWorkspaceFolder},target=/app,type=bind,consistency=cached"
+	],
+	"overrideCommand": true,
+	"shutdownAction": "stopCompose",
+	"forwardPorts": [8000, 8080, 5173],
+	"customizations": {
+		"vscode": {
+			"settings": {
+				"python.defaultInterpreterPath": "/usr/local/bin/python",
+				"python.terminal.activateEnvironment": false
+			},
+			"extensions": [
+				"ms-python.python",
+				"ms-python.debugpy"
+			]
+		}
+	}
+}
